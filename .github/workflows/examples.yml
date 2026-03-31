@@ -1,14 +1,11 @@
 name: Examples
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+  workflow_dispatch: # Manual trigger only - requires Docker with mina images
 
 jobs:
-  build:
+  docker-example:
+    if: ${{ false }} # Disabled: requires self-hosted runners with mina Docker images
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +20,7 @@ jobs:
           minimina network delete
 
       - name: 📥 Checkout
-        uses: actions/checkout@v4 # Checking-out repository only to get access to topology files
+        uses: actions/checkout@v4
 
       - name: 👍 Network from topology
         run: |
