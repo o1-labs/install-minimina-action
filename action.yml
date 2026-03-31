@@ -8,6 +8,10 @@ inputs:
   commit_or_branch:
     description: 'Specific commit hash or branch name to clone and build from source.'
     required: false
+  repository:
+    description: 'Repository to clone from (owner/repo format).'
+    required: false
+    default: 'MinaFoundation/minimina'
 
 runs:
   using: 'composite'
@@ -25,7 +29,7 @@ runs:
     - name: Install and build from source
       if: inputs.commit_or_branch != ''
       run: |
-        git clone https://github.com/MinaFoundation/minimina.git
+        git clone https://github.com/${{ inputs.repository }}.git minimina
         cd minimina
         git checkout ${{ inputs.commit_or_branch }}
         cargo build

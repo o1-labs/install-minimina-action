@@ -1,0 +1,52 @@
+name: Test Action
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-default-repo:
+    name: Build from default repo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout action
+        uses: actions/checkout@v4
+
+      - name: Install minimina (default repo)
+        uses: ./
+        with:
+          commit_or_branch: main
+
+      - name: Verify binary
+        run: minimina --help
+
+  test-custom-repo:
+    name: Build from custom repo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout action
+        uses: actions/checkout@v4
+
+      - name: Install minimina (custom repo)
+        uses: ./
+        with:
+          commit_or_branch: main
+          repository: o1-labs/minimina
+
+      - name: Verify binary
+        run: minimina --help
+
+  test-package-install:
+    name: Install from package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout action
+        uses: actions/checkout@v4
+
+      - name: Install minimina (package)
+        uses: ./
+
+      - name: Verify binary
+        run: minimina --help
