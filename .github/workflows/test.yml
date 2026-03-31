@@ -50,3 +50,23 @@ jobs:
 
       - name: Verify binary
         run: minimina --help
+
+  test-with-mina:
+    name: Install with mina daemon
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout action
+        uses: actions/checkout@v4
+
+      - name: Install minimina + mina
+        uses: ./
+        with:
+          commit_or_branch: main
+          repository: o1-labs/minimina
+          install_mina: 'true'
+
+      - name: Verify minimina
+        run: minimina --help
+
+      - name: Verify mina
+        run: mina version

@@ -5,6 +5,10 @@ inputs:
     description: 'Stream for the package - can be stable or unstable.'
     required: true
     default: 'stable'
+  codename:
+    description: 'Distribution codename for the package repository.'
+    required: false
+    default: 'noble'
   commit_or_branch:
     description: 'Specific commit hash or branch name to clone and build from source.'
     required: false
@@ -12,6 +16,10 @@ inputs:
     description: 'Repository to clone from (owner/repo format).'
     required: false
     default: 'MinaFoundation/minimina'
+  install_mina:
+    description: 'Also install mina-mainnet package (for native mode).'
+    required: false
+    default: 'false'
 
 runs:
   using: 'composite'
@@ -19,7 +27,7 @@ runs:
     - name: Install from package
       if: inputs.commit_or_branch == ''
       run: |
-        echo "deb [trusted=yes] http://packages.o1test.net ubuntu ${{ inputs.stream }}" | sudo tee /etc/apt/sources.list.d/mina.list
+        echo "deb [trusted=yes] http://packages.o1test.net ${{ inputs.codename }} ${{ inputs.stream }}" | sudo tee /etc/apt/sources.list.d/mina.list
         sudo apt-get update
         sudo apt-get install -y minimina
         mkdir -p minimina_home
@@ -37,4 +45,15 @@ runs:
         mkdir -p minimina_home
         echo "MINIMINA_HOME=$(pwd)/minimina_home" >> $GITHUB_ENV
         cd -
+      shell: bash
+
+    - name: Install mina daemon
+      if: inputs.install_mina == 'true'
+      run: |
+        if ! grep -q packages.o1test.net /etc/apt/sources.list.d/mina.list 2>/dev/null; then
+          echo "deb [trusted=yes] http://packages.o1test.net ${{ inputs.codename }} ${{ inputs.stream }}" | sudo tee /etc/apt/sources.list.d/mina.list
+          sudo apt-get update
+        fi
+        sudo apt-get install -y mina-mainnet
+        echo "MINA_BIN_DIR=$(dirname $(which mina))" >> $GITHUB_ENV
       shell: bash
